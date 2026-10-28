@@ -1,0 +1,27 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+import { authors, type AuthorId } from '../../data/authors';
+
+export async function getStaticPaths() {
+  return Object.keys(authors).map((id) => ({ params: { id } }));
+}
+
+const id = Astro.params.id as AuthorId;
+const a = authors[id];
+const base = import.meta.env.BASE_URL;
+const list = (await getCollection('articles', ({ data }) => !data.draft && data.author === id))
+  .sort((x, y) => y.data.pubDate.valueOf() - x.data.pubDate.valueOf());
+---
+<Base title={a.name} description={a.niche}>
+  <h1>{a.name}</h1>
+  <p class="meta">Ниша: {a.niche}</p>
+  <p>{a.bio}</p>
+  <hr />
+  <ul>
+    {list.map((e) => (
+      <li><a href={`${base}articles/${e.id}/`}>{e.data.title}</a> <span class="meta">{e.data.pubDate.toLocaleDateString('ru-RU')}</span></li>
+    ))}
+  </ul>
+  {list.length === 0 && <p class="meta">Статей пока нет.</p>}
+</Base>

@@ -1,0 +1,28 @@
+---
+import Base from '../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+import { authors } from '../data/authors';
+
+const base = import.meta.env.BASE_URL;
+const all = (await getCollection('articles', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+---
+<Base title="Главная" description="Три ниши ИИ: агенты, бизнес и безопасность">
+  <h1>AI Hub</h1>
+  <p class="meta">Три псевдонима, три ниши.</p>
+  <ul>
+    {Object.entries(authors).map(([id, a]) => (
+      <li><a href={`${base}authors/${id}/`}>{a.name}</a> — {a.niche}</li>
+    ))}
+  </ul>
+  <hr />
+  <h2>Последние статьи</h2>
+  <ul>
+    {all.map((e) => (
+      <li>
+        <a href={`${base}articles/${e.id}/`}>{e.data.title}</a>
+        <span class="meta"> {authors[e.data.author].name} · {e.data.pubDate.toLocaleDateString('ru-RU')}</span>
+      </li>
+    ))}
+  </ul>
+</Base>

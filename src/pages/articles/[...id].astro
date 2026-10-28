@@ -1,0 +1,30 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection, render } from 'astro:content';
+import { authors } from '../../data/authors';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('articles', ({ data }) => !data.draft);
+  return entries.map((entry) => ({ params: { id: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const base = import.meta.env.BASE_URL;
+const a = authors[entry.data.author];
+---
+<Base title={entry.data.title} description={entry.data.description}>
+  <p class="meta"><a href={`${base}authors/${entry.data.author}/`}>{a.name}</a> · {entry.data.pubDate.toLocaleDateString('ru-RU')} · {entry.data.tags.join(', ')}</p>
+  <h1>{entry.data.title}</h1>
+  <p><em>{entry.data.description}</em></p>
+  <Content />
+  {entry.data.sources.length > 0 && (
+    <>
+      <hr />
+      <h3>Источники</h3>
+      <ul>
+        {entry.data.sources.map((s) => <li><a href={s.url} rel="nofollow noopener">{s.name}</a></li>)}
+      </ul>
+    </>
+  )}
+</Base>

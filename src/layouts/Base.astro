@@ -1,0 +1,43 @@
+---
+interface Props {
+  title: string;
+  description?: string;
+  image?: string;
+}
+const { title, description = 'AI Hub: ИИ-агенты, бизнес и безопасность', image } = Astro.props;
+const base = import.meta.env.BASE_URL;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+---
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>{title} · AI Hub</title>
+  <meta name="description" content={description} />
+  <link rel="canonical" href={canonical} />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={description} />
+  <meta property="og:url" content={canonical} />
+  {image && <meta property="og:image" content={image} />}
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="alternate" type="application/rss+xml" title="AI Hub RSS" href={`${base}rss.xml`} />
+  <style>
+    :root { --ink:#151a23; --muted:#5b6577; --bg:#fff; --line:#e2e6ee; --accent:#2f55d4; }
+    body { margin:0; font:18px/1.7 Georgia, 'Literata', serif; color:var(--ink); background:var(--bg); }
+    main { max-width:700px; margin:0 auto; padding:24px 18px 64px; }
+    nav a { margin-right:14px; font:15px system-ui, sans-serif; }
+    a { color:var(--accent); }
+    h1 { line-height:1.2; }
+    .meta { color:var(--muted); font:14px system-ui, sans-serif; }
+    hr { border:0; border-top:1px solid var(--line); margin:32px 0; }
+  </style>
+</head>
+<body>
+  <main>
+    <nav><a href={base}>Главная</a><a href={`${base}rss.xml`}>RSS</a></nav>
+    <slot />
+  </main>
+</body>
+</html>
